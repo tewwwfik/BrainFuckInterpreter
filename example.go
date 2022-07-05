@@ -46,9 +46,14 @@ func test() {
 		calc: makeDouble,
 	}
 	//We are adding new commands
-	customCommands.Add(cmd)
-	customCommands.Add(cmd2)
-
+	err := customCommands.Add(cmd)
+	if err != nil {
+		panic(err.Error())
+	}
+	err = customCommands.Add(cmd2)
+	if err != nil {
+		panic(err.Error())
+	}
 	str := "+++2#."
 	result, err := RunBf(str, customCommands)
 	if err != nil {

@@ -47,6 +47,7 @@ func TestStartLoopMissingRunBf(t *testing.T) {
 	}
 }
 
+//Nth fibonacci number starts with 0,1
 func fib(n int) int {
 	if n == 1 {
 		return 1
@@ -64,15 +65,33 @@ func TestCustomCommandRunBf(t *testing.T) {
 	}
 	//Creates a new command List
 	customCommands := newCommandList()
+	//add current cells fibonacci number by 'f'
 	cmd := Command{
 		name: 'f',
 		calc: fib,
 	}
-	//We are adding new commands
-	customCommands.Add(cmd)
-
+	err := customCommands.Add(cmd)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	testCase.actualResult, _ = RunBf(testCase.value, customCommands)
 	if testCase.actualResult != testCase.expectedResult {
+		t.Fail()
+	}
+}
+
+func TestCustomCommandFaultyCharRunBf(t *testing.T) {
+	testCase := TestCase{
+		value:       "+++++++++++ƒ--.",
+		expectedErr: errors.New("Command not exist in ASCII table!"),
+	}
+	customCommands := newCommandList()
+	cmd := Command{
+		name: 'ƒ', //faulty char!
+		calc: fib,
+	}
+	testCase.actualErr = customCommands.Add(cmd)
+	if testCase.actualErr.Error() != testCase.expectedErr.Error() {
 		t.Fail()
 	}
 }

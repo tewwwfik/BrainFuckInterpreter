@@ -20,14 +20,18 @@ func newCommandList() commandListT {
 	return make(commandListT, 10)
 }
 
-func (cl commandListT) Add(cmd Command) {
+func (cl commandListT) Add(cmd Command) (err error) {
 	if _, ok := cl[cmd.name]; ok {
-		panic("Command Already Exist!")
+		return errors.New("Command Already Exist!")
+	}
+	if cmd.name > 127 {
+		return errors.New("Command not exist in ASCII table!")
 	}
 	cl[cmd.name] = Command{
 		cmd.name,
 		cmd.calc,
 	}
+	return nil
 }
 
 //holds the loops as stack
