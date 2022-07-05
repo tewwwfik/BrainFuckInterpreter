@@ -18,7 +18,7 @@ func TestHelloWorldRunBf(t *testing.T) {
 		value:          ">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.",
 		expectedResult: "Hello, World!",
 	}
-	_, testCase.actualResult = RunBf(testCase.value)
+	testCase.actualResult, _ = RunBf(testCase.value, nil)
 
 	if testCase.actualResult != testCase.expectedResult {
 		t.Fail()
@@ -30,7 +30,7 @@ func TestCloseLoopMissingRunBf(t *testing.T) {
 		value:       "+++++[-",
 		expectedErr: errors.New("Loop brackets dont match! Could not found matching ']'"),
 	}
-	testCase.actualErr, _ = RunBf(testCase.value)
+	_, testCase.actualErr = RunBf(testCase.value, nil)
 	if testCase.actualErr.Error() != testCase.expectedErr.Error() {
 		t.Fail()
 	}
@@ -41,7 +41,7 @@ func TestStartLoopMissingRunBf(t *testing.T) {
 		value:       "+++++-]",
 		expectedErr: errors.New("Loop brackets dont match! Could not found matching '['"),
 	}
-	testCase.actualErr, _ = RunBf(testCase.value)
+	_, testCase.actualErr = RunBf(testCase.value, nil)
 	if testCase.actualErr.Error() != testCase.expectedErr.Error() {
 		t.Fail()
 	}

@@ -4,9 +4,31 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
+
+var cells = make([]int, 2)
+
+type Command struct {
+	name int
+	calc func(int) int
+}
+
+type commandListT map[int]Command
+
+func newCommandList() commandListT {
+	return make(commandListT, 10)
+}
+
+func (cl commandListT) Add(cmd Command) {
+	if _, ok := cl[cmd.name]; ok {
+		panic("Command Already Exist!")
+	}
+	cl[cmd.name] = Command{
+		cmd.name,
+		cmd.calc,
+	}
+}
 
 //holds the loops as stack
 type loopStack []int
@@ -23,38 +45,14 @@ func (s loopStack) pop() (loopStack, int, error) {
 	}
 }
 
-//Brainfuck interpreter uses bf files as argument
-//You can use test.bf for example.
-func main() {
-	args := os.Args
-	if len(args) < 2 {
-		fmt.Printf("You should give the file as parameter : %s {filename.bf}\n", args[0])
-		return
-	}
-
-	file := args[1]
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		fmt.Printf("Error reading %s\n", file)
-		return
-	}
-	err, _ = RunBf(string(data))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Finished!")
-}
-
-func RunBf(input string) (err error, result string) {
-	cells := make([]int, 2)
+func RunBf(input string, customCommands commandListT) (result string, err error) {
 	loop := make(loopStack, 0)
 	//loop map holds the ptr of loops.
 	//open loops holds closed location and close loops holds open location
 	loopMap := make(map[int]int)
 	var ptr int = 0
 	reader := bufio.NewReader(os.Stdin)
-
+	cells = make([]int, 2)
 	//Creates loop indexes. Push and pop from the stack and stores open and close position to a map.
 	//loopMap holds openLoopAddress->closeLoopAddress and closeLoopAddress->openLoopAddress
 	for _, i := range input {
@@ -65,7 +63,7 @@ func RunBf(input string) (err error, result string) {
 			var err error
 			loop, loopBeginningIndex, err = loop.pop()
 			if err != nil {
-				return err, ""
+				return "", err
 			}
 			loopMap[loopBeginningIndex] = ptr
 			loopMap[ptr] = loopBeginningIndex
@@ -74,7 +72,7 @@ func RunBf(input string) (err error, result string) {
 	}
 	//Creating loopMap from stack and all elements of stack should be popped!
 	if len(loop) > 0 {
-		return errors.New("Loop brackets dont match! Could not found matching ']'"), ""
+		return "", errors.New("Loop brackets dont match! Could not found matching ']'")
 	}
 	//Starting to execute program.
 	ptr = 0
@@ -101,7 +99,7 @@ func RunBf(input string) (err error, result string) {
 				cells = append(cells, 0)
 			}
 		case '.':
-			fmt.Printf("%c", cells[cellIndex])
+			//fmt.Printf("%c", cells[cellIndex]) //Prints to console optional!
 			result += fmt.Sprintf("%c", cells[cellIndex])
 		case ',':
 			value, _ := reader.ReadByte()
@@ -117,9 +115,16 @@ func RunBf(input string) (err error, result string) {
 				ptr = loopMap[ptr]
 			}
 		default:
+			//Check if there is custom commands.
+			if customCommands != nil {
+				if v, ok := customCommands[int(i)]; ok {
+					//Calls custom command implemented function.
+					cells[cellIndex] = v.calc(cells[cellIndex])
+				}
+			}
 		}
 		ptr += 1
 	}
 	fmt.Printf("\n")
-	return nil, result
+	return result, nil
 }
