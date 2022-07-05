@@ -46,3 +46,33 @@ func TestStartLoopMissingRunBf(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func fib(n int) int {
+	if n == 1 {
+		return 1
+	} else if n == 0 {
+		return 0
+	}
+	return fib(n-1) + fib(n-2)
+}
+
+func TestCustomCommandRunBf(t *testing.T) {
+	testCase := TestCase{
+		value:          "+++++++++++f--.",
+		expectedResult: "W",
+		expectedErr:    nil,
+	}
+	//Creates a new command List
+	customCommands := newCommandList()
+	cmd := Command{
+		name: 'f',
+		calc: fib,
+	}
+	//We are adding new commands
+	customCommands.Add(cmd)
+
+	testCase.actualResult, _ = RunBf(testCase.value, customCommands)
+	if testCase.actualResult != testCase.expectedResult {
+		t.Fail()
+	}
+}
