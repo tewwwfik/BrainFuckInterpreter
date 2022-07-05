@@ -7,11 +7,12 @@ import (
 	"os"
 )
 
-var cells = make([]int, 2)
+var cells = make([]int, 30000)
 
 type Command struct {
-	name int
-	calc func(int) int
+	name  int
+	calc  func(int) int
+	mvPtr func(int) int
 }
 
 type commandListT map[int]Command
@@ -30,6 +31,7 @@ func (cl commandListT) Add(cmd Command) (err error) {
 	cl[cmd.name] = Command{
 		cmd.name,
 		cmd.calc,
+		cmd.mvPtr,
 	}
 	return nil
 }
@@ -56,7 +58,6 @@ func RunBf(input string, customCommands commandListT) (result string, err error)
 	loopMap := make(map[int]int)
 	var ptr int = 0
 	reader := bufio.NewReader(os.Stdin)
-	cells = make([]int, 2)
 	//Creates loop indexes. Push and pop from the stack and stores open and close position to a map.
 	//loopMap holds openLoopAddress->closeLoopAddress and closeLoopAddress->openLoopAddress
 	for _, i := range input {
@@ -123,7 +124,11 @@ func RunBf(input string, customCommands commandListT) (result string, err error)
 			if customCommands != nil {
 				if v, ok := customCommands[int(i)]; ok {
 					//Calls custom command implemented function.
-					cells[cellIndex] = v.calc(cells[cellIndex])
+					if v.calc != nil {
+						cells[cellIndex] = v.calc(cells[cellIndex])
+					} else if v.mvPtr != nil {
+						cellIndex = v.mvPtr(cellIndex)
+					}
 				}
 			}
 		}

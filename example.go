@@ -45,6 +45,10 @@ func test() {
 		name: '2',
 		calc: makeDouble,
 	}
+	cmd3 := Command{
+		name:  'R',
+		mvPtr: moveDoubleRight,
+	}
 	//We are adding new commands
 	err := customCommands.Add(cmd)
 	if err != nil {
@@ -54,7 +58,8 @@ func test() {
 	if err != nil {
 		panic(err.Error())
 	}
-	str := "+++2#."
+	err = customCommands.Add(cmd3)
+	str := "+++2#.R+++2#.<+++2#."
 	result, err := RunBf(str, customCommands)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -69,4 +74,8 @@ func square(x int) int {
 
 func makeDouble(x int) int {
 	return 2 * x
+}
+
+func moveDoubleRight(x int) int {
+	return x + 2
 }

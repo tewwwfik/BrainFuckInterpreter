@@ -95,3 +95,33 @@ func TestCustomCommandFaultyCharRunBf(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func multiplyTen(i int) int {
+	return i * 10
+}
+func mvPtrDoubleLeft(i int) int {
+	return i - 2
+}
+
+//Custom move pointer
+func TestCustomCommandMvPtrRunBf(t *testing.T) {
+	testCase := TestCase{
+		value:          "+++++++M>+++M+++>+++M+++L.>.>.",
+		expectedResult: "F!!",
+	}
+	customCommands := newCommandList()
+	cmd := Command{
+		name: 'M', //faulty char!
+		calc: multiplyTen,
+	}
+	cmd2 := Command{
+		name:  'L',
+		mvPtr: mvPtrDoubleLeft,
+	}
+	testCase.actualErr = customCommands.Add(cmd)
+	testCase.actualErr = customCommands.Add(cmd2)
+	testCase.actualResult, _ = RunBf(testCase.value, customCommands)
+	if testCase.actualResult != testCase.expectedResult {
+		t.Fail()
+	}
+}
