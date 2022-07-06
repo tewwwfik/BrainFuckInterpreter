@@ -56,6 +56,7 @@ func RunBf(input string, customCommands commandListT) (result string, err error)
 	//loop map holds the ptr of loops.
 	//open loops holds closed location and close loops holds open location
 	loopMap := make(map[int]int)
+	//pointer for read program input.
 	var ptr int = 0
 	reader := bufio.NewReader(os.Stdin)
 	//Creates loop indexes. Push and pop from the stack and stores open and close position to a map.
@@ -81,6 +82,7 @@ func RunBf(input string, customCommands commandListT) (result string, err error)
 	}
 	//Starting to execute program.
 	ptr = 0
+	//pointer for track cells.
 	var cellIndex int
 	for ptr < len(input) {
 		//instruction
@@ -97,11 +99,15 @@ func RunBf(input string, customCommands commandListT) (result string, err error)
 				cells[cellIndex] = 256
 			}
 		case '<':
-			cellIndex -= 1
+			if cellIndex == 0 {
+				cellIndex = len(cells) - 1
+			} else {
+				cellIndex -= 1
+			}
 		case '>':
 			cellIndex += 1
 			if cellIndex == len(cells) {
-				cells = append(cells, 0)
+				cellIndex = 0
 			}
 		case '.':
 			//fmt.Printf("%c", cells[cellIndex]) //Prints to console optional!

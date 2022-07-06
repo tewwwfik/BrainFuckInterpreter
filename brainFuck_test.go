@@ -125,3 +125,14 @@ func TestCustomCommandMvPtrRunBf(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestArrayBoundsRunBf(t *testing.T) {
+	testCase := TestCase{
+		value:          "++++++[>+++++++++++<-]>-.<<++++++[>+++++++++++<-]>.<<++++++[>+++++++++++<-]>+.",
+		expectedResult: "ABC",
+	}
+	testCase.actualResult, testCase.actualErr = RunBf(testCase.value, nil)
+	if testCase.actualResult != testCase.expectedResult {
+		t.Fail()
+	}
+}
