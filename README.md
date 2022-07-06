@@ -25,3 +25,5 @@ Compile using go build and run:
 ```
 
 You can check example.go or brainfuck_test.go for see usage as package and custom commands.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
