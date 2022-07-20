@@ -16,7 +16,7 @@ A HelloWorld program looks like this, consisting of only eight types of commands
 ## Features of this interpreter
 - Syntax errors detect
 - Native Brainfuck grammar interpretation
-- You can add your custom commands for both cell and pointer
+- You can add your custom commands both for cell value and for pointer
 
 # Usage
 Compile using go build and run:
